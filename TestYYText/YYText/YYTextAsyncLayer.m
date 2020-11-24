@@ -91,6 +91,11 @@ static dispatch_queue_t YYTextAsyncLayerGetReleaseQueue() {
     [_sentinel increase];
 }
 
+- (void)setNeedsDisplay {
+    [self _cancnelAsyncDisplay];
+    [super setNeedsDisplay];
+}
+
 // 不要主动调用这个方法。layer会在合适的时候调用这个方法去更新layer的content。
 // 如果layer有delegate，display方法会尝试调用delegate的"displayLayer:"方法，
 // 如果代理实现了"displayLayer:"方法，代理就可以更新layer的contents。
@@ -239,6 +244,10 @@ static dispatch_queue_t YYTextAsyncLayerGetReleaseQueue() {
         // 直接调用，没有使用自己创建的队列
         if (task.didDisplay) task.didDisplay(self, YES);
     }
+}
+
+- (void)_cancelAsyncDisplay {
+    [_sentinel increase];
 }
 
 @end

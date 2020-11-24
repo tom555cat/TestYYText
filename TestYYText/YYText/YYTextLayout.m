@@ -226,6 +226,7 @@ dispatch_semaphore_signal(_lock);
         rect = CGRectStandardize(rect);
         cgPathBox = rect;
         // 进行上下翻转，，，后续ctFrame使用到的rect就是从这里计算出来的★★★★★★★★★★★★★★
+        // 只是进行一个上下翻转，并没有移动Height距离
         rect = CGRectApplyAffineTransform(rect, CGAffineTransformMakeScale(1, -1));
         cgPath = CGPathCreateWithRect(rect, NULL); // let CGPathIsRect() returns true
     } else if (container.path && CGPathIsRect(container.path.CGPath, &cgPathBox) && container.exclusionPaths.count == 0) {   // 定义path先不考虑

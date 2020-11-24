@@ -149,6 +149,7 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
         if (!_ignoreCommonProperties) {
             _state.layoutNeedUpdate = YES;
         }
+        // 为什么在异步的情况下需要清理contents？而同步的情况下不需要？
         if (_displaysAsynchronously && _clearContentsBeforeAsynchronouslyDisplay) {
             [self _clearContents];
         }
