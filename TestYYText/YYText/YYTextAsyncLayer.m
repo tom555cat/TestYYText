@@ -92,8 +92,8 @@ static dispatch_queue_t YYTextAsyncLayerGetReleaseQueue() {
 }
 
 // 不要主动调用这个方法。layer会在合适的时候调用这个方法去更新layer的content。
-// 如果layer有delegate，这个方法会尝试调用delegate的"displayLayer:"方法，
-// 代理通过实现"displayLayer:"方法更新layer的contents。
+// 如果layer有delegate，display方法会尝试调用delegate的"displayLayer:"方法，
+// 如果代理实现了"displayLayer:"方法，代理就可以更新layer的contents。
 // 如果代理不实现"displayLayer:"方法，这个方法会创建一个backing store，并且调用layer的drawInContext:方法会用content去填充backing store，新的backing store回去替换layer之前的content。
 // 子类能够重写这个方法，能够使用它去设置layer的contents属性。你想要与众不同地更新layer时可以重写这个方法。
 - (void)display {

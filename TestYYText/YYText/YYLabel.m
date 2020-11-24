@@ -78,6 +78,7 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
     self.layer.contents = nil;
     if (image) {
 #warning 为什么需要在指定队列中释放？
+        /// 在非主线程释放，优化主线程时间
         dispatch_async(YYLabelGetReleaseQueue(), ^{
             CFRelease(image);
         });
@@ -185,6 +186,14 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
         }
     }
 #warning 一般情况下_textParser是nil
+/// 在设置文字的时候就解析了表情，保存在了attributedString中，对应的style的key设置成了"YYTextAttachmentAttributeName"；
+/// 设置的attachment是自定义的YYTextAttachment，其为NSCopying，但是对于YYTextAttachment的content在复制的时候，如果
+    /// content遵守NSCopying，那么就copy，否则就直接强引用。这是否会导致content为图片时的多线程操作问题?
+    ///
+    ///
+    ///
+/// 在异步绘制的时候，由于复制了attributedText，所以在后续可以拿到对应的YYTextAttachment。
+/// 由于这些东西都保存进了text中，所以复制的时候也就一起复制了。
     if ([_textParser parseText:_innerText selectedRange:NULL]) {
         [self _updateOuterTextProperties];
     }
@@ -265,6 +274,8 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
         
         YYTextLayout *drawLayout = layout;
         if (layoutNeedUpdate) {
+            // 重新创建了一个layout，text(NSAttributedString)也是在内部进行了拷贝，防止多线程操作。
+            // 相关的attachment是又重新解析出来的，独立保存在layout.attachments中。
             layout = [YYTextLayout layoutWithContainer:container text:text];
             // shrinkLayout一般为nil
             shrinkLayout = [YYLabel _shrinkLayoutWithLayout:layout];
